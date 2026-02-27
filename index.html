@@ -351,6 +351,25 @@
       100% { background-position: -200% 0; }
     }
 
+    .btn-delete {
+      background: transparent;
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      color: var(--bad);
+      padding: 4px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-delete:hover {
+      background: rgba(231, 76, 60, 0.15);
+      border-color: var(--bad);
+      transform: scale(1.05);
+    }
+
     /* Empty state */
     .empty {
       text-align: center;
@@ -415,6 +434,7 @@
           <th>Sulphates</th>
           <th>Alcohol</th>
           <th>Quality Label</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="tableBody">
@@ -517,6 +537,7 @@
         <td>${vin.sulphates}</td>
         <td>${vin.alcohol}</td>
         <td>${badgeLabel(vin.quality_label)}</td>
+        <td><button class="btn-delete" onclick="supprimerVin(${vin.id})">🗑 Supprimer</button></td>
       </tr>
     `).join("");
 
@@ -605,6 +626,25 @@
     } finally {
       btn.classList.remove("loading");
       btn.textContent = "🍷   Analyser tous les vins";
+    }
+  }
+
+  // ─── Supprimer un vin ────────────────────────────────────────────────
+  async function supprimerVin(id) {
+    if (!confirm("Supprimer ce vin ?")) return;
+    try {
+      await supabaseFetch(`wine_predictions?id=eq.${id}`, { method: "DELETE" });
+      // Supprimer la ligne du tableau avec animation
+      const row = document.getElementById(`row-${id}`);
+      if (row) {
+        row.style.transition = "opacity 0.3s, transform 0.3s";
+        row.style.opacity = "0";
+        row.style.transform = "translateX(20px)";
+        setTimeout(() => { row.remove(); chargerDonnees(); }, 300);
+      }
+      showToast("✅ Supprimé", "Le vin a été supprimé avec succès", "success");
+    } catch (e) {
+      showToast("Erreur", e.message, "error");
     }
   }
 
