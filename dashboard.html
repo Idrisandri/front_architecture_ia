@@ -4,19 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wine Quality Analyzer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Merriweather:wght@700,900&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg: #0e0a0a;
-      --surface: #1a1212;
-      --border: #2e1f1f;
-      --accent: #c0392b;
-      --accent2: #e74c3c;
-      --gold: #d4a843;
-      --text: #f0e6e6;
-      --muted: #7a6060;
-      --good: #2ecc71;
-      --bad: #e74c3c;
+      --bg: #f5ede0;
+      --surface: #fdf6ee;
+      --surface2: #efe3d0;
+      --border: #d4b896;
+      --border-dark: #b8936a;
+      --accent: #7a1c2e;
+      --accent2: #9b2335;
+      --gold: #a0622a;
+      --gold-light: #c4843e;
+      --text: #2c1810;
+      --text-muted: #7a5c44;
+      --good: #2d7a3a;
+      --good-bg: #e8f5ea;
+      --bad: #8b1e1e;
+      --bad-bg: #faeaea;
+      --wood: #8b5a2b;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,72 +30,94 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: 'Merriweather', serif;
       min-height: 100vh;
       overflow-x: hidden;
+      /* Subtle wood grain texture */
+      background-image: 
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 60px,
+          rgba(139,90,43,0.04) 60px,
+          rgba(139,90,43,0.04) 61px
+        ),
+        repeating-linear-gradient(
+          180deg,
+          transparent,
+          transparent 8px,
+          rgba(139,90,43,0.02) 8px,
+          rgba(139,90,43,0.02) 9px
+        );
     }
 
-    /* Grain overlay */
-    body::before {
+    /* Warm vignette */
+    body::after {
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(122,28,46,0.08) 100%);
       pointer-events: none;
-      z-index: 999;
-      opacity: 0.4;
+      z-index: 0;
     }
 
     header {
-      padding: 3rem 4rem 2rem;
-      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 4rem 2rem;
+      border-bottom: 2px solid var(--border-dark);
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       position: relative;
+      background: linear-gradient(135deg, #fdf6ee 0%, #f0e4d0 100%);
+      box-shadow: 0 2px 20px rgba(122,28,46,0.08);
+      z-index: 1;
     }
 
-    header::after {
+    header::before {
       content: '';
       position: absolute;
-      bottom: -1px;
-      left: 4rem;
-      width: 80px;
-      height: 2px;
-      background: var(--accent);
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--gold-light), var(--accent));
     }
 
     .logo {
       display: flex;
       flex-direction: column;
+      gap: 4px;
     }
 
     .logo-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.8rem;
-      font-weight: 900;
-      letter-spacing: -1px;
+      font-family: 'Parisienne', cursive;
+      font-size: 3.2rem;
+      font-weight: 400;
       line-height: 1;
-      color: var(--text);
+      color: var(--accent);
+      text-shadow: 1px 1px 0 rgba(122,28,46,0.15);
+      letter-spacing: 1px;
     }
 
     .logo-title span {
-      color: var(--accent);
+      color: var(--gold);
     }
 
     .logo-sub {
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 4px;
+      font-family: 'Merriweather', serif;
+      font-size: 0.58rem;
+      color: var(--text-muted);
+      letter-spacing: 3px;
       text-transform: uppercase;
-      margin-top: 6px;
+      font-weight: 700;
+      margin-top: 2px;
     }
 
     .header-right {
-      font-size: 0.7rem;
-      color: var(--muted);
+      font-family: 'Merriweather', serif;
+      font-size: 0.65rem;
+      color: var(--text-muted);
       text-align: right;
-      line-height: 1.8;
+      line-height: 2;
+      font-weight: 700;
     }
 
     .status-dot {
@@ -111,6 +139,8 @@
       padding: 3rem 4rem;
       max-width: 1400px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
     .toolbar {
@@ -121,10 +151,12 @@
     }
 
     .section-label {
-      font-size: 0.65rem;
-      letter-spacing: 4px;
+      font-family: 'Merriweather', serif;
+      font-size: 0.62rem;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--text-muted);
+      font-weight: 700;
     }
 
     .section-label span {
@@ -133,40 +165,47 @@
 
     .btn-analyser {
       background: var(--accent);
-      color: #fff;
+      color: #fdf6ee;
       border: none;
-      padding: 0.85rem 2.5rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 3px;
+      padding: 0.9rem 2.5rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.68rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
+      font-weight: 700;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.3s ease;
-      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      border-radius: 1px;
+      box-shadow: 0 3px 12px rgba(122,28,46,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .btn-analyser::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
     }
 
     .btn-analyser:hover {
       background: var(--accent2);
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(192, 57, 43, 0.4);
+      box-shadow: 0 8px 24px rgba(122,28,46,0.35);
     }
 
-    .btn-analyser:active {
-      transform: translateY(0);
-    }
+    .btn-analyser:active { transform: translateY(0); }
 
     .btn-analyser.loading {
       pointer-events: none;
-      opacity: 0.7;
+      opacity: 0.75;
     }
 
     .btn-analyser.loading::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
       animation: shimmer 1s infinite;
     }
 
@@ -177,48 +216,57 @@
 
     /* Table container */
     .table-wrap {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-dark);
       overflow-x: auto;
       position: relative;
+      border-radius: 2px;
+      box-shadow: 0 4px 24px rgba(122,28,46,0.08), 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .table-wrap::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--gold), transparent);
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold-light), var(--accent2));
+      z-index: 2;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
+      background: var(--surface);
     }
 
     thead tr {
-      background: #140f0f;
-      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #f0e0c8 0%, #e8d5bc 100%);
+      border-bottom: 2px solid var(--border-dark);
     }
 
     thead th {
       padding: 1rem 1.2rem;
       text-align: left;
-      font-weight: 500;
+      font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--gold);
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       white-space: nowrap;
+      font-family: 'Merriweather', serif;
     }
 
     tbody tr {
-      border-bottom: 1px solid rgba(46, 31, 31, 0.5);
+      border-bottom: 1px solid rgba(212,184,150,0.5);
       transition: background 0.2s ease;
     }
 
+    tbody tr:nth-child(even) {
+      background: rgba(239,227,208,0.4);
+    }
+
     tbody tr:hover {
-      background: rgba(192, 57, 43, 0.05);
+      background: rgba(122,28,46,0.05);
     }
 
     tbody tr.new-row {
@@ -226,83 +274,109 @@
     }
 
     @keyframes rowIn {
-      from { opacity: 0; transform: translateX(-10px); background: rgba(192,57,43,0.15); }
-      to   { opacity: 1; transform: translateX(0);     background: transparent; }
+      from { opacity: 0; transform: translateX(-10px); background: rgba(122,28,46,0.1); }
+      to   { opacity: 1; transform: translateX(0); background: transparent; }
     }
 
     td {
-      padding: 0.9rem 1.2rem;
+      padding: 0.85rem 1.2rem;
       color: var(--text);
-      opacity: 0.85;
       white-space: nowrap;
+      font-family: 'Merriweather', serif;
+      font-size: 0.68rem;
+      font-weight: 700;
     }
 
     td.id-col {
-      color: var(--muted);
-      font-size: 0.6rem;
+      color: var(--text-muted);
+      font-size: 0.58rem;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       padding: 4px 12px;
-      border-radius: 2px;
-      font-size: 0.65rem;
+      border-radius: 1px;
+      font-size: 0.6rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      font-weight: 500;
+      font-weight: 700;
+      font-family: 'Merriweather', serif;
     }
 
     .badge.bon {
-      background: rgba(46, 204, 113, 0.12);
+      background: var(--good-bg);
       color: var(--good);
-      border: 1px solid rgba(46, 204, 113, 0.2);
+      border: 1px solid rgba(45,122,58,0.25);
     }
 
     .badge.mauvais {
-      background: rgba(231, 76, 60, 0.12);
+      background: var(--bad-bg);
       color: var(--bad);
-      border: 1px solid rgba(231, 76, 60, 0.2);
+      border: 1px solid rgba(139,30,30,0.25);
     }
 
     .badge.pending {
-      background: rgba(212, 168, 67, 0.1);
+      background: rgba(160,98,42,0.08);
       color: var(--gold);
-      border: 1px solid rgba(212, 168, 67, 0.2);
+      border: 1px solid rgba(160,98,42,0.25);
     }
 
     /* Stats bar */
     .stats {
       display: flex;
-      gap: 2rem;
+      gap: 0;
       margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
+      border: 1px solid var(--border-dark);
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(122,28,46,0.07);
     }
 
     .stat {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: relative;
     }
 
+    .stat:last-child { border-right: none; }
+
+    .stat::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stat:nth-child(1)::before { background: var(--border-dark); }
+    .stat:nth-child(2)::before { background: var(--good); }
+    .stat:nth-child(3)::before { background: var(--bad); }
+    .stat:nth-child(4)::before { background: var(--gold-light); }
+
     .stat-value {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
+      font-family: 'Parisienne', cursive;
+      font-size: 2.8rem;
       line-height: 1;
     }
 
     .stat-value.good { color: var(--good); }
     .stat-value.bad  { color: var(--bad); }
     .stat-value.total { color: var(--text); }
+    .stat-value.pending { color: var(--gold); }
 
     .stat-label {
-      font-size: 0.6rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.58rem;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--text-muted);
+      font-weight: 700;
     }
 
     /* Toast */
@@ -311,14 +385,17 @@
       bottom: 2rem;
       right: 2rem;
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
+      border: 1px solid var(--border-dark);
+      border-left: 4px solid var(--accent);
       padding: 1rem 1.5rem;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       z-index: 1000;
       transform: translateX(120%);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       max-width: 320px;
+      box-shadow: 0 8px 30px rgba(122,28,46,0.15);
+      border-radius: 2px;
+      font-family: 'Merriweather', serif;
     }
 
     .toast.show { transform: translateX(0); }
@@ -326,23 +403,21 @@
     .toast.error   { border-left-color: var(--bad); }
 
     .toast-title {
-      font-weight: 500;
+      font-weight: 700;
       margin-bottom: 4px;
       color: var(--text);
     }
 
     .toast-msg {
-      color: var(--muted);
-      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-size: 0.62rem;
     }
 
     /* Loading skeleton */
     .skeleton td {
-      background: linear-gradient(90deg, var(--surface) 25%, #221818 50%, var(--surface) 75%);
-      background-size: 200% 100%;
+      background: linear-gradient(90deg, var(--surface2) 25%, #f5ede0 50%, var(--surface2) 75%) !important;
+      background-size: 200% 100% !important;
       animation: skeleton 1.5s infinite;
-      border-radius: 2px;
-      height: 16px;
       color: transparent !important;
     }
 
@@ -353,44 +428,44 @@
 
     .btn-delete {
       background: transparent;
-      border: 1px solid rgba(231, 76, 60, 0.3);
+      border: 1px solid rgba(139,30,30,0.3);
       color: var(--bad);
       padding: 4px 12px;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.62rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.58rem;
       letter-spacing: 1px;
       cursor: pointer;
-      border-radius: 2px;
+      border-radius: 1px;
+      font-weight: 700;
       transition: all 0.2s ease;
     }
 
     .btn-delete:hover {
-      background: rgba(231, 76, 60, 0.15);
+      background: var(--bad-bg);
       border-color: var(--bad);
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
     /* Empty state */
     .empty {
       text-align: center;
       padding: 4rem;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
-    .empty-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.3;
-    }
-
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
     .empty-text {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       letter-spacing: 2px;
+      font-family: 'Merriweather', serif;
+      font-weight: 700;
     }
 
     @media (max-width: 768px) {
       header, main { padding: 2rem 1.5rem; }
-      .logo-title { font-size: 1.8rem; }
+      .logo-title { font-size: 2.2rem; }
+      .stats { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
     }
   </style>
 </head>
@@ -438,11 +513,10 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <!-- Skeleton loading -->
         <tr class="skeleton">
           <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
           <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-          <td>—</td><td>—</td><td>—</td>
+          <td>—</td><td>—</td><td>—</td><td>—</td>
         </tr>
       </tbody>
     </table>
@@ -462,25 +536,22 @@
       <div class="stat-label">Mauvais vins 😐</div>
     </div>
     <div class="stat">
-      <div class="stat-value" style="color:var(--gold)" id="statPending">0</div>
+      <div class="stat-value pending" id="statPending">0</div>
       <div class="stat-label">Non analysés</div>
     </div>
   </div>
 </main>
 
-<!-- Toast -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toastTitle"></div>
   <div class="toast-msg" id="toastMsg"></div>
 </div>
 
 <script>
-  // ⚙️ CONFIG — remplace par tes vraies URLs
   const SUPABASE_URL = "https://qyngylnnclaycuyfkzre.supabase.co";
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5bmd5bG5uY2xheWN1eWZrenJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDI2NzAsImV4cCI6MjA4NzcxODY3MH0.poDxKX5zZLngKBj6GEvS1FoDLBMOxtogAkwk4Kr0mr4";
-  const API_URL      = "https://architecture-ia.onrender.com"; // ou http://localhost:8000 en local
+  const API_URL      = "https://architecture-ia.onrender.com";
 
-  // ─── Supabase fetch helper ───────────────────────────────────────────
   async function supabaseFetch(path, options = {}) {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
       ...options,
@@ -496,7 +567,6 @@
     return res.json();
   }
 
-  // ─── Charger les données depuis Supabase ─────────────────────────────
   async function chargerDonnees() {
     try {
       const data = await supabaseFetch("wine_predictions?select=*&order=id.asc");
@@ -507,22 +577,13 @@
     }
   }
 
-  // ─── Afficher le tableau ─────────────────────────────────────────────
   function afficherTableau(data) {
     const tbody = document.getElementById("tableBody");
-
     if (!data || data.length === 0) {
-      tbody.innerHTML = `
-        <tr><td colspan="13">
-          <div class="empty">
-            <div class="empty-icon">🍾</div>
-            <div class="empty-text">Aucune donnée trouvée</div>
-          </div>
-        </td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="14"><div class="empty"><div class="empty-icon">🍾</div><div class="empty-text">Aucune donnée trouvée</div></div></td></tr>`;
       return;
     }
-
-    tbody.innerHTML = data.map((vin, i) => `
+    tbody.innerHTML = data.map((vin) => `
       <tr id="row-${vin.id}">
         <td class="id-col">${vin.id}</td>
         <td>${vin.fixed_acidity}</td>
@@ -541,7 +602,6 @@
       </tr>
     `).join("");
 
-    // Mise à jour stats
     document.getElementById("count").textContent = data.length;
     document.getElementById("statTotal").textContent = data.length;
     document.getElementById("statBon").textContent = data.filter(v => v.quality_label === "Bon").length;
@@ -549,31 +609,20 @@
     document.getElementById("statPending").textContent = data.filter(v => !v.quality_label).length;
   }
 
-  // ─── Badge quality label ─────────────────────────────────────────────
   function badgeLabel(label) {
     if (label === "Bon")     return `<span class="badge bon">🍷 Bon</span>`;
     if (label === "Mauvais") return `<span class="badge mauvais">😐 Mauvais</span>`;
     return `<span class="badge pending">— En attente</span>`;
   }
 
-  // ─── Analyser tous les vins sans quality_label ───────────────────────
   async function analyserTout() {
     const btn = document.getElementById("btnAnalyser");
     btn.classList.add("loading");
     btn.textContent = "Analyse en cours...";
-
     try {
-      // 1. Récupérer les vins sans quality_label
       const vins = await supabaseFetch("wine_predictions?quality_label=is.null&select=*");
-
-      if (vins.length === 0) {
-        showToast("Info", "Tous les vins sont déjà analysés ✅", "success");
-        return;
-      }
-
+      if (vins.length === 0) { showToast("Info", "Tous les vins sont déjà analysés ✅", "success"); return; }
       showToast("Analyse", `Analyse de ${vins.length} vin(s) en cours...`, "");
-
-      // 2. Appeler FastAPI pour chaque vin
       let success = 0;
       for (const vin of vins) {
         try {
@@ -581,46 +630,29 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              fixed_acidity:       vin.fixed_acidity,
-              volatile_acidity:    vin.volatile_acidity,
-              citric_acid:         vin.citric_acid,
-              residual_sugar:      vin.residual_sugar,
-              chlorides:           vin.chlorides,
-              free_sulfur_dioxide: vin.free_sulfur_dioxide,
-              total_sulfur_dioxide:vin.total_sulfur_dioxide,
-              density:             vin.density,
-              ph:                  vin.ph,
-              sulphates:           vin.sulphates,
-              alcohol:             vin.alcohol
+              fixed_acidity: vin.fixed_acidity, volatile_acidity: vin.volatile_acidity,
+              citric_acid: vin.citric_acid, residual_sugar: vin.residual_sugar,
+              chlorides: vin.chlorides, free_sulfur_dioxide: vin.free_sulfur_dioxide,
+              total_sulfur_dioxide: vin.total_sulfur_dioxide, density: vin.density,
+              ph: vin.ph, sulphates: vin.sulphates, alcohol: vin.alcohol
             })
           });
-
           const result = await res.json();
-
-          // 3. Update directement dans Supabase
           await supabaseFetch(`wine_predictions?id=eq.${vin.id}`, {
             method: "PATCH",
             body: JSON.stringify({ quality_label: result.quality_label })
           });
-
-          // 4. Mettre à jour la ligne dans le tableau en temps réel
-          const cell = document.querySelector(`#row-${vin.id} td:last-child`);
-          if (cell) {
-            cell.innerHTML = badgeLabel(result.quality_label);
-            document.querySelector(`#row-${vin.id}`).classList.add("new-row");
+          const row = document.querySelector(`#row-${vin.id}`);
+          if (row) {
+            const cells = row.querySelectorAll('td');
+            cells[cells.length - 2].innerHTML = badgeLabel(result.quality_label);
+            row.classList.add("new-row");
           }
-
           success++;
-        } catch (err) {
-          console.error(`Erreur vin ${vin.id}:`, err);
-        }
+        } catch (err) { console.error(`Erreur vin ${vin.id}:`, err); }
       }
-
       showToast("✅ Terminé", `${success}/${vins.length} vins analysés avec succès`, "success");
-
-      // Rafraîchir les stats
       chargerDonnees();
-
     } catch (e) {
       showToast("Erreur", e.message, "error");
     } finally {
@@ -629,12 +661,10 @@
     }
   }
 
-  // ─── Supprimer un vin ────────────────────────────────────────────────
   async function supprimerVin(id) {
     if (!confirm("Supprimer ce vin ?")) return;
     try {
       await supabaseFetch(`wine_predictions?id=eq.${id}`, { method: "DELETE" });
-      // Supprimer la ligne du tableau avec animation
       const row = document.getElementById(`row-${id}`);
       if (row) {
         row.style.transition = "opacity 0.3s, transform 0.3s";
@@ -648,7 +678,6 @@
     }
   }
 
-  // ─── Toast notification ──────────────────────────────────────────────
   function showToast(title, msg, type = "") {
     const toast = document.getElementById("toast");
     document.getElementById("toastTitle").textContent = title;
@@ -657,7 +686,6 @@
     setTimeout(() => toast.classList.remove("show"), 4000);
   }
 
-  // ─── Init ────────────────────────────────────────────────────────────
   chargerDonnees();
 </script>
 </body>
