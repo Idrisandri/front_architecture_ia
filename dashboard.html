@@ -178,6 +178,8 @@
       overflow: hidden;
       transition: all 0.3s ease;
       border-radius: 1px;
+      text-decoration: none;
+      display: inline-block;
       box-shadow: 0 3px 12px rgba(160,98,42,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
     }
 
@@ -521,9 +523,9 @@
     <div class="section-label">
       Données vins — <span id="count">0</span> entrées
     </div>
-    <button class="btn-ajout" onclick="window.location.href='ajouter.html'">
+    <a href="ajouter.html" class="btn-ajout">
       ➕ &nbsp; Ajouter un vin
-    </button>
+    </a>
     <button class="btn-analyser" id="btnAnalyser" onclick="analyserTout()">
       🍷 &nbsp; Analyser tous les vins
     </button>
