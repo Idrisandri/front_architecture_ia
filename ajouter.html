@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ajouter un vin — Wine.AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Merriweather:wght@700,900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f5ede0;
+      --surface: #fdf6ee;
+      --surface2: #efe3d0;
+      --border: #d4b896;
+      --border-dark: #b8936a;
+      --accent: #7a1c2e;
+      --accent2: #9b2335;
+      --gold: #a0622a;
+      --gold-light: #c4843e;
+      --text: #2c1810;
+      --text-muted: #7a5c44;
+      --good: #2d7a3a;
+      --good-bg: #e8f5ea;
+      --bad: #8b1e1e;
+      --bad-bg: #faeaea;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Merriweather', serif;
+      min-height: 100vh;
+      background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(139,90,43,0.04) 60px, rgba(139,90,43,0.04) 61px),
+        repeating-linear-gradient(180deg, transparent, transparent 8px, rgba(139,90,43,0.02) 8px, rgba(139,90,43,0.02) 9px);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(122,28,46,0.08) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      padding: 2.5rem 4rem 2rem;
+      border-bottom: 2px solid var(--border-dark);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      position: relative;
+      background: linear-gradient(135deg, #fdf6ee 0%, #f0e4d0 100%);
+      box-shadow: 0 2px 20px rgba(122,28,46,0.08);
+      z-index: 1;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--gold-light), var(--accent));
+    }
+
+    .logo-title {
+      font-family: 'Merriweather', serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 1px 2px 8px rgba(122,28,46,0.15);
+    }
+
+    .logo-title span { color: var(--gold); }
+
+    .logo-sub {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .btn-retour {
+      background: transparent;
+      border: 1px solid var(--border-dark);
+      color: var(--text-muted);
+      padding: 0.7rem 1.6rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      border-radius: 1px;
+    }
+
+    .btn-retour:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(122,28,46,0.05);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-title {
+      font-family: 'Merriweather', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 0.3rem;
+    }
+
+    .page-sub {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border-dark);
+      padding: 2.5rem;
+      position: relative;
+      border-radius: 2px;
+      box-shadow: 0 4px 24px rgba(122,28,46,0.08), 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold-light), var(--accent2));
+      border-radius: 2px 2px 0 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.6rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-family: 'Merriweather', serif;
+      font-size: 0.68rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      border-radius: 1px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(122,28,46,0.08);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.5;
+      font-weight: 700;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    .hint {
+      font-family: 'Merriweather', serif;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-submit {
+      background: var(--accent);
+      color: #fdf6ee;
+      border: none;
+      padding: 0.9rem 2.5rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border-radius: 1px;
+      box-shadow: 0 3px 12px rgba(122,28,46,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+    }
+
+    .btn-submit:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(122,28,46,0.35);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border-dark);
+      color: var(--text-muted);
+      padding: 0.9rem 2rem;
+      font-family: 'Merriweather', serif;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 1px;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(160,98,42,0.05);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border-dark);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.5rem;
+      font-size: 0.88rem;
+      z-index: 1000;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 320px;
+      box-shadow: 0 8px 30px rgba(122,28,46,0.15);
+      border-radius: 2px;
+      font-family: 'Merriweather', serif;
+    }
+
+    .toast.show { transform: translateX(0); }
+    .toast.success { border-left-color: var(--good); }
+    .toast.error   { border-left-color: var(--bad); }
+
+    .toast-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .toast-msg {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      header, main { padding: 1.5rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      .logo-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo-title">Wine<span>.</span>AI</div>
+    <div class="logo-sub">Ajouter un vin</div>
+  </div>
+  <a href="dashboard.html" class="btn-retour">← Retour au tableau</a>
+</header>
+
+<main>
+  <div class="page-title">Nouveau vin</div>
+  <div class="page-sub">Remplir les features — quality label sera prédit automatiquement</div>
+
+  <div class="form-card">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Fixed Acidity</label>
+        <input type="number" id="fixed_acidity" step="0.1" placeholder="ex: 11.2"/>
+        <span class="hint">Acidité fixe (g/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Volatile Acidity</label>
+        <input type="number" id="volatile_acidity" step="0.01" placeholder="ex: 0.28"/>
+        <span class="hint">Acidité volatile (g/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Citric Acid</label>
+        <input type="number" id="citric_acid" step="0.01" placeholder="ex: 0.56"/>
+        <span class="hint">Acide citrique (g/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Residual Sugar</label>
+        <input type="number" id="residual_sugar" step="0.1" placeholder="ex: 1.9"/>
+        <span class="hint">Sucre résiduel (g/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Chlorides</label>
+        <input type="number" id="chlorides" step="0.001" placeholder="ex: 0.075"/>
+        <span class="hint">Chlorures (g/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Free Sulfur Dioxide</label>
+        <input type="number" id="free_sulfur_dioxide" step="0.5" placeholder="ex: 17"/>
+        <span class="hint">SO₂ libre (mg/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Total Sulfur Dioxide</label>
+        <input type="number" id="total_sulfur_dioxide" step="0.5" placeholder="ex: 60"/>
+        <span class="hint">SO₂ total (mg/dm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>Density</label>
+        <input type="number" id="density" step="0.0001" placeholder="ex: 0.9980"/>
+        <span class="hint">Densité (g/cm³)</span>
+      </div>
+
+      <div class="form-group">
+        <label>pH</label>
+        <input type="number" id="ph" step="0.01" placeholder="ex: 3.16"/>
+        <span class="hint">Niveau de pH</span>
+      </div>
+
+      <div class="form-group">
+        <label>Sulphates</label>
+        <input type="number" id="sulphates" step="0.01" placeholder="ex: 0.58"/>
+        <span class="hint">Sulfates (g/dm³)</span>
+      </div>
+
+      <div class="form-group full">
+        <label>Alcohol</label>
+        <input type="number" id="alcohol" step="0.1" placeholder="ex: 9.8"/>
+        <span class="hint">Teneur en alcool (%)</span>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-submit" id="btnSubmit" onclick="ajouterVin()">
+        ＋ &nbsp; Ajouter le vin
+      </button>
+      <button class="btn-reset" onclick="resetForm()">Réinitialiser</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://qyngylnnclaycuyfkzre.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5bmd5bG5uY2xheWN1eWZrenJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDI2NzAsImV4cCI6MjA4NzcxODY3MH0.poDxKX5zZLngKBj6GEvS1FoDLBMOxtogAkwk4Kr0mr4";
+
+  async function ajouterVin() {
+    const btn = document.getElementById("btnSubmit");
+    const champs = ['fixed_acidity','volatile_acidity','citric_acid','residual_sugar',
+                    'chlorides','free_sulfur_dioxide','total_sulfur_dioxide','density',
+                    'ph','sulphates','alcohol'];
+    const donnee = {};
+    for (const champ of champs) {
+      const val = document.getElementById(champ).value;
+      if (val === "" || val === null) {
+        showToast("⚠️ Champ manquant", `Le champ "${champ}" est vide`, "error");
+        document.getElementById(champ).focus();
+        return;
+      }
+      donnee[champ] = parseFloat(val);
+    }
+    donnee.quality_label = null;
+    btn.disabled = true;
+    btn.textContent = "Insertion en cours...";
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/wine_predictions`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify(donnee)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      showToast("✅ Vin ajouté !", "Va sur le tableau pour lancer l'analyse 🍷", "success");
+      resetForm();
+    } catch (e) {
+      showToast("Erreur", e.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "＋   Ajouter le vin";
+    }
+  }
+
+  function resetForm() {
+    ['fixed_acidity','volatile_acidity','citric_acid','residual_sugar',
+     'chlorides','free_sulfur_dioxide','total_sulfur_dioxide','density',
+     'ph','sulphates','alcohol'].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+  }
+
+  function showToast(title, msg, type = "") {
+    const toast = document.getElementById("toast");
+    document.getElementById("toastTitle").textContent = title;
+    document.getElementById("toastMsg").textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove("show"), 4000);
+  }
+</script>
+</body>
+</html>
